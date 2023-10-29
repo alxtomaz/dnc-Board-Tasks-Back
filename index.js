@@ -5,6 +5,7 @@ const logger = require("morgan");
 const cors = require("cors"); // adicionado alex
 const swaggerUi = require("swagger-ui-express");
 const routes = require("./src/routes");
+const authDocProducao = require("./src/middlewares/authDoc");
 const swaggerOptions = { customCssUrl: "/swagger-ui.css" };
 var app = express();
 require("dotenv").config(); // adicionado alex
@@ -28,6 +29,7 @@ if (process.env.NODE_ENV !== "test") {
   app.use(
     "/doc",
     swaggerUi.serve,
+    authDocProducao,
     swaggerUi.setup(swaggerFile, swaggerOptions)
   );
 }
