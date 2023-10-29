@@ -11370,10 +11370,10 @@
 	text-decoration: underline
 }
 
-.swagger-ui .errors-wrapper hgroup {
+/* .swagger-ui .errors-wrapper hgroup {
 	align-items: center;
 	display: flex
-}
+} */
 
 .swagger-ui .errors-wrapper hgroup h4 {
 	color: #3b4151;
