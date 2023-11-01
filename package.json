@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./index.js",
-    "autodoc": "node ./swagger/autoGenDoc.js",
+    "autoDoc": "node ./swagger/autoGenDoc.js",
     "dev": "npx nodemon ./swagger/autoGenDoc.js"
 
   },
