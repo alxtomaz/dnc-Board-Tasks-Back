@@ -19,8 +19,8 @@ let doc = {
       description: "Servidor LocalHost.",
     },
     {
-      url: "http://boardtasks-back.vercel.app/",
-      description: "Servidor LocalHost.",
+      url: "https://dnc-board-tasks-back-o2ksabcu3-alxtomaz.vercel.app/",
+      description: "Servidor de produção.",
     },
   ],
   consumes: ["application/json"],
