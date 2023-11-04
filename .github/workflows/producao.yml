@@ -1,9 +1,15 @@
+# nome pipeline
 name: Pipeline de produção
+# VARIAVEIS DE AMBIENTE ENV, pipeline roda no servidor do github
 env:
   NODE_ENV: production
+  # VARIAVEL DE AMBIENTE DO GITHUB SECRETA ELA E SECRETA, SÓ QUEM SABE O VALOR E A PIPELINE
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  # VARIAVEL DE AMBIENTE DO GITHUB SECRETA ELA E SECRETA, SÓ QUEM SABE O VALOR E A PIPELINE
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+
+# QUANDO EXECUTAR A PIPELINE (FUNÇÃO ON)
 on:
   push:
     branches:
@@ -14,63 +20,82 @@ on:
 jobs:
 
 
-
+  # primeiro job1, primeira tarefa a se realizar ( CI PARTE DO BUILD CRIAÇÃO DE ARTEFATO )
   job1:
+    # nome do job
     name: CI - Build e criação do artefato
+    # ultima versão do ubuntu, qual sistema operacional essa tarefa vai ser executada
     runs-on: ubuntu-latest
     steps:
       - name: Pegar código do Repositório
-        uses: actions/checkout@v3
+        # sempre quaando tiver uses é uma bilioteca do github actions, vai pegar o ultimo codigo do nosso repositorio e vai jogar no nosso servidor ubunt
+        uses: actions/checkout@v3 
 
+        # instalando dos pct npm, porque não tem nenhuma pasta node modules 
       - name: Instalando pacotes do npm
+        # executar qualquer comando no terminal e só usar o run
         run: npm install
 
+        # gerar documentação do autodoc que ja configurada em package.json
       - name: Gerando documentação do swagger.json
         run: npm run autoDoc
 
+        #Apagando novamente os pacotes instalados, para não ficar pesado
       - name: Apagando pasta node_modules
         run: rm -rf node_modules
 
+        #Apagando a pasta git tambem, pois e muita pesado
       - name: Apagando pasta .git
         run: rm -rf .git
-
+        # listagem das pastas
       - name: Arquivos e pastas
         run: ls
 
+
+        #zipando os arquivos, para ficar mais leve fazendo um upload no github atraves do pacote do github actions abaixo
       - name: Criando artefato ZIP do código buildado
         uses: actions/upload-artifact@v3
         with:
+        #codigo temporario gereado no build
           name: artefato
           retention-days: 1
           path: ./
 
 
 
-
+  # SEGUNDO job2, segunda tarefa a se realizar ( CD PARTE DO DEPLOY NO VERCEL QUE VAI FAZER O CODIGO SUBIR )
   job2:
     name: CD - Deploy na Vercel
+    # dependencia que precisa aguardar o job1  finalizar
     needs: job1
     runs-on: ubuntu-latest
     steps:
+    # fazendo download do arquivo que foi feito upoad no job1, usando uma biblioteca diferente
       - name: Baixando Artefato do código buildado
         uses: actions/download-artifact@v3
         with:
+        # nome do arquivo que está sendo feito o download 
           name: artefato
-
+    
+    # Tem que instalar novamente a pasta NPM, pois na pasta artefato não tem o pacote node modules
       - name: Instalando pacotes do npm
         run: npm install
-
+    # Listando as pastas
       - name: Arquivos e pastas do artefato
         run: ls
-
+    # cli aplicativo que roda no terminal , para fazer o build no vercel
       - name: Instalando CLI da Vercel
         run: npm install --global vercel@latest
 
+    # Esses ultimos 3 comandos, o mesmo pesquisou em " vercel github actions exemplo ", pois e um padrão
       - name: Buscando informações de ambiente no Vercel
+      # tem que criar esse toekn na vercel para depois cadastrar el no github
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
+      # um simbolismo para fazer a proxima etapa, no vercel tem as etapas de build
       - name: Buildando artefatos do projeto
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
+      # comando que realmente faz subir na vercel
       - name: Deploy de artefatos do projeto na Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
