@@ -11,7 +11,7 @@
       "description": "Servidor LocalHost."
     },
     {
-      "url": "http://dnc-board-tasks-back-livid.vercel.app/",
+      "url": "https://dnc-board-tasks-back-livid.vercel.app/",
       "description": "Servidor de produção."
     }
   ],
